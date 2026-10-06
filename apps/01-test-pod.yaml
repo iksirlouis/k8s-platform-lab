@@ -22,10 +22,15 @@ spec:
             cpu: 50m
           limits:
             cpu: 100m
-        volumeMounts:
+       volumeMounts:
         - name: html-volume
           mountPath: /usr/share/nginx/html
+        - name: web-logs
+          mountPath: /var/log/nginx        # <-- Mount disk to Nginx log path
       volumes:
       - name: html-volume
         configMap:
           name: web-landing-page
+      - name: web-logs
+        persistentVolumeClaim:
+          claimName: web-log-pvc           # <-- Connect to your PVC
