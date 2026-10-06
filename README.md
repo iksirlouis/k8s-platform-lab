@@ -96,29 +96,73 @@ When hitting the service with a heavy load loop:
 
 ## Deployment & Teardown
 
-### Quick Start (Rebuild from scratch)
-If you want to spin up the entire environment from a blank slate, run these commands in order:
+## Prerequisites, Deployment & Telemetry Access
+
+### Required Local Tools
+Before starting, ensure you have the following installed on your local machine:
+* **Minikube** & **Docker** (configured as the Minikube driver)
+* **kubectl** (Kubernetes CLI)
+* **Helm v3** (Kubernetes package manager)
+
+---
+
+### Quick Start (Full Rebuild from Scratch)
+Because `minikube delete` wipes everything, follow these exact steps to rebuild the cluster, re-initialize your monitoring stack, and spin up your apps via GitOps:
 
 ```bash
-# 1. Start the local cluster
+# 1. Start a fresh local cluster and enable the metrics server for the HPA
 minikube start --driver=docker
+minikube addons enable metrics-server
 
-# 2. Deploy Argo CD
+# 2. Re-install the Prometheus & Grafana Monitoring Stack via Helm
+helm repo add promo-community https://github.io
+helm repo update
+kubectl create namespace monitoring
+helm install kube-stack promo-community/kube-prometheus-stack -n monitoring
+
+# 3. Deploy the GitOps Engine (Argo CD)
 kubectl create namespace argocd
 kubectl apply -n argocd -f platform/argocd-install.yaml
 
-# 3. Apply the root app to bootstrap everything
+# 4. Bootstrap your apps using the Root Application Controller
+# Once applied, Argo CD pulls and syncs everything else from Git automatically
 kubectl apply -f platform/root-application.yaml
-
-# 4. Access the Argo CD UI (in a separate terminal)
-kubectl port-forward svc/argocd-server -n argocd 8080:443
 ```
 
+---
+
+### Accessing the Dashboards (Port-Forwarding & Login)
+
+Kubernetes isolates your cluster services by default. To view your platforms in your web browser, open separate terminal windows and run these port-forward tunnels:
+
+#### 1. Argo CD Dashboard
+* **Tunnel Command:**
+  ```bash
+  kubectl port-forward svc/argocd-server -n argocd 8080:443
+  ```
+* **URL:** Go to `https://localhost:8080` (bypass the browser SSL warning).
+* **Username:** `admin`
+* **Password:** Retrieve your unique local password by running:
+  ```bash
+  kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+  ```
+
+#### 2. Grafana Dashboards
+* **Tunnel Command:**
+  ```bash
+  kubectl port-forward svc/kube-stack-grafana -n monitoring 3000:80
+  ```
+* **URL:** Go to `http://localhost:3000`
+* **Username:** `admin`
+* **Password:** `prom-operator` *(default password installed by the Helm chart)*
+
+---
+
 ### Clean Teardown
-To completely wipe the cluster and free up your computer's CPU and RAM without losing your local Git code:
+To completely wipe the cluster and free up your computer's CPU and RAM:
 
 ```bash
-# Delete the local Minikube cluster and all its volumes
+# Deletes the entire cluster, metrics engine, and all Helm installations
 minikube delete
 ```
 
