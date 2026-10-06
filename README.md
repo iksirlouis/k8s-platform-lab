@@ -110,19 +110,20 @@ Before starting, ensure you have the following installed on your local machine:
 Because `minikube delete` wipes everything, follow these exact steps to rebuild the cluster, re-initialize your monitoring stack, and spin up your apps via GitOps:
 
 ```bash
-# 1. Start a fresh local cluster and enable the metrics server for the HPA
-minikube start --driver=docker
+# 1. Start a fresh local cluster with optimized resource limits and enable the metrics server
+minikube start --cpus 2 --memory 4096 --driver docker
 minikube addons enable metrics-server
 
-# 2. Re-install the Prometheus & Grafana Monitoring Stack via Helm
-helm repo add promo-community https://github.io
+# 2. Install Helm and deploy the Prometheus & Grafana Monitoring Stack
+curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4 | bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
 kubectl create namespace monitoring
-helm install kube-stack promo-community/kube-prometheus-stack -n monitoring
+helm install my-monitor prometheus-community/kube-prometheus-stack --namespace monitoring
 
 # 3. Deploy the GitOps Engine (Argo CD)
 kubectl create namespace argocd
-kubectl apply -n argocd -f platform/argocd-install.yaml
+kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 # 4. Bootstrap your apps using the Root Application Controller
 # Once applied, Argo CD pulls and syncs everything else from Git automatically
@@ -136,7 +137,7 @@ kubectl apply -f platform/root-application.yaml
 Kubernetes isolates your cluster services by default. To view your platforms in your web browser, open separate terminal windows and run these port-forward tunnels:
 
 #### 1. Argo CD Dashboard
-* **Tunnel Command:**
+* **Port-Forward Command:**
   ```bash
   kubectl port-forward svc/argocd-server -n argocd 8080:443
   ```
@@ -148,13 +149,20 @@ Kubernetes isolates your cluster services by default. To view your platforms in 
   ```
 
 #### 2. Grafana Dashboards
-* **Tunnel Command:**
+* **Port-Forward Command:**
   ```bash
   kubectl port-forward svc/kube-stack-grafana -n monitoring 3000:80
   ```
 * **URL:** Go to `http://localhost:3000`
 * **Username:** `admin`
 * **Password:** `prom-operator` *(default password installed by the Helm chart)*
+
+#### 3. Web Content Port-Forward
+* **Port-Forward Command:**
+  ```bash
+  kubectl port-forward svc/baseline-web-service 8085:80
+  ```
+* **URL:** Go to `http://localhost:8085`
 
 ---
 
