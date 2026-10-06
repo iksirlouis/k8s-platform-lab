@@ -76,6 +76,33 @@ The platform uses a standard GitOps flow where changes pushed to the repository 
 
 ## Testing & Metrics
 
+### How to Run the Infrastructure Stress Test
+
+To validate the elasticity of the cloud platform and witness the HPA automatically multiply your pods in real time, run the following validation loop:
+
+1. **Open a terminal window** to stream live cluster resource telemetry:
+   ```bash
+   kubectl get hpa -w
+   ```
+
+2. **Open a second terminal window** and launch the high-speed traffic generator pod:
+   ```bash
+   kubectl run cloud-traffic-stressor --image=alpine --restart=Never -- \
+     sh -c "while true; do wget -q -O- http://baseline-web-service; done"
+   ```
+
+3. **Observe the Metrics & Observability Wave:**
+   * Watch your monitoring terminal or your **Grafana Dashboard**. Within 45 seconds, the CPU utilization metric will spike past your designated `50%` threshold.
+   * Watch **Argo CD** or your terminal display your single deployment spin up **4 active pod replicas** to safely load-balance the influx.
+
+4. **Cool Down and Scale Back Down:**
+   * Kill the traffic loop to simulate the traffic surge ending:
+     ```bash
+     kubectl delete pod cloud-traffic-stressor
+     ```
+   * The platform will safely process its 5-minute cool-down stabilization countdown before cleanly terminating the extra containers and returning to its single-pod baseline.
+
+
 ### Load Test Results
 Idle baseline: The web app runs on a single pod using roughly **9.97 MiB of RAM** and `0%` CPU.
 
@@ -151,7 +178,7 @@ Kubernetes isolates your cluster services by default. To view your platforms in 
 #### 2. Grafana Dashboards
 * **Port-Forward Command:**
   ```bash
-  kubectl port-forward svc/kube-stack-grafana -n monitoring 3000:80
+kubectl port-forward svc/my-monitor-grafana 3000:80 --namespace monitoring
   ```
 * **URL:** Go to `http://localhost:3000`
 * **Username:** `admin`
