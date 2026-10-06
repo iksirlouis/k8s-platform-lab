@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: synergychat-testram-configmap
-data:
-   MEGABYTES: "10"
