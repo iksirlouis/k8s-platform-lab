@@ -155,7 +155,10 @@ Kubernetes isolates your cluster services by default. To view your platforms in 
   ```
 * **URL:** Go to `http://localhost:3000`
 * **Username:** `admin`
-* **Password:** `prom-operator` *(default password installed by the Helm chart)*
+* **Password:** Retrieve your unique local password by running:
+  ```bash
+  kubectl --namespace monitoring get secrets my-monitor-grafana -o jsonpath="{.data.admin-password}" | base64 -d ; echo
+  ```
 
 #### 3. Web Content Port-Forward
 * **Port-Forward Command:**
