@@ -94,7 +94,7 @@ When hitting the service with a heavy load loop:
 
 ---
 
-## 🛠️ Deployment & Teardown
+##Deployment & Teardown
 
 ### Quick Start (Rebuild from scratch)
 If you want to spin up the entire environment from a blank slate, run these commands in order:
