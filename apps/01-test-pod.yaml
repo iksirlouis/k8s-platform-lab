@@ -22,7 +22,7 @@ spec:
             cpu: 50m
           limits:
             cpu: 100m
-       volumeMounts:
+        volumeMounts:
         - name: html-volume
           mountPath: /usr/share/nginx/html
         - name: web-logs
