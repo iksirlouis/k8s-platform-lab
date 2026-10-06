@@ -20,3 +20,8 @@ spec:
       selfHeal: true
     syncOptions:
     - CreateNamespace=true
+  ignoreDifferences:               # <-- 1. Tell Argo CD to ignore specific shifts
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/replicas                # <-- 2. Ignore changes made to the replicas value
