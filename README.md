@@ -92,3 +92,33 @@ When hitting the service with a heavy load loop:
 * **CD & Package Management:** Argo CD, Helm v3
 * **Monitoring:** Prometheus Operator, Grafana
 
+---
+
+## 🛠️ Deployment & Teardown
+
+### Quick Start (Rebuild from scratch)
+If you want to spin up the entire environment from a blank slate, run these commands in order:
+
+```bash
+# 1. Start the local cluster
+minikube start --driver=docker
+
+# 2. Deploy Argo CD
+kubectl create namespace argocd
+kubectl apply -n argocd -f platform/argocd-install.yaml
+
+# 3. Apply the root app to bootstrap everything
+kubectl apply -f platform/root-application.yaml
+
+# 4. Access the Argo CD UI (in a separate terminal)
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+
+### Clean Teardown
+To completely wipe the cluster and free up your computer's CPU and RAM without losing your local Git code:
+
+```bash
+# Delete the local Minikube cluster and all its volumes
+minikube delete
+```
+
