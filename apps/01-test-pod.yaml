@@ -1,19 +1,26 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: baseline-web-test
-  labels:
-    tier: frontend
+  name: baseline-web-deployment
 spec:
-  containers:
-  - name: nginx-container
-    image: docker.io/nginx:alpine
-    ports:
-    - containerPort: 80
-    volumeMounts:
-    - name: html-volume
-      mountPath: /usr/share/nginx/html
-  volumes:
-  - name: html-volume
-    configMap:
-      name: web-landing-page
+  replicas: 1
+  selector:
+    matchLabels:
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        tier: frontend
+    spec:
+      containers:
+      - name: nginx-container
+        image: docker.io/nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html-volume
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: html-volume
+        configMap:
+          name: web-landing-page
