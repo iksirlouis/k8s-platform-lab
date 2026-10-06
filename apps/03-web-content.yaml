@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-landing-page
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>My K8s Portfolio Lab</title>
+        <style>
+            body { font-family: sans-serif; background-color: #1e1e24; color: #fff; text-align: center; padding: 50px; }
+            h1 { color: #4caf50; }
+            .status { background: #2a2a35; padding: 15px; display: inline-block; border-radius: 5px; border-left: 5px solid #4caf50; }
+        </style>
+    </head>
+    <body>
+        <h1>🚀 GitOps Lab Platform Active</h1>
+        <p class="status">Successfully serving custom content from a Kubernetes ConfigMap!</p>
+    </body>
+    </html>
