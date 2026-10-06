@@ -178,7 +178,7 @@ Kubernetes isolates your cluster services by default. To view your platforms in 
 #### 2. Grafana Dashboards
 * **Port-Forward Command:**
   ```bash
-kubectl port-forward svc/my-monitor-grafana 3000:80 --namespace monitoring
+  kubectl port-forward svc/my-monitor-grafana 3000:80 --namespace monitoring
   ```
 * **URL:** Go to `http://localhost:3000`
 * **Username:** `admin`
