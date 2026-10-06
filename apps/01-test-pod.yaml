@@ -17,6 +17,11 @@ spec:
         image: docker.io/nginx:alpine
         ports:
         - containerPort: 80
+        resources:
+          requests:
+            cpu: 50m
+          limits:
+            cpu: 100m
         volumeMounts:
         - name: html-volume
           mountPath: /usr/share/nginx/html
