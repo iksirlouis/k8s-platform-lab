@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/iksirlouis'
+    repoURL: 'https://github.com/iksirlouis/k8s-platform-lab'
     targetRevision: HEAD
     path: apps
     directory:
