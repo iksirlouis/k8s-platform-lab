@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: baseline-web-test
+  labels:
+    tier: frontend
+spec:
+  containers:
+  - name: nginx-container
+    image: docker.io/nginx:alpine
+    ports:
+    - containerPort: 80
